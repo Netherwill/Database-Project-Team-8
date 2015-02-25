@@ -1,0 +1,141 @@
+User Requirement Specification
+
+Data types:
+
+Course: Course ID(int, 2 digit), Course name(string, 64 char), department(string, 12 char), Course time(time, from time A to time B(*if no time type supported, then time is int-int-string, e.g. 0800-0900-TUE)), Instructor(string, 32 char), Course location(string, 32 char), Maximum number of enrollments(int, 1~300), required books(string, 128 char), add Course due day(date(*if no date type supported, then date is int, e.g. 201502200630)), drop Course due day(date), Syllabus(pdf file)
+
+User: User ID (University ID)(int, 3 digit), User name(string, 32 char), type of user(Subscriber, Manager, Admin), department(string, 12 char), password(password(*if no password type supported, then password is char(2)-int(6), e.g. ab123456))
+
+Grade table: Course ID(int, 2 digit), User ID(int, 3 digit), grade(int, 0~100), name of grade(string, 12 char)
+
+News table: Course ID(int, 2 digit), date(date), news MSG (string, 500 char)
+
+Enrollment table: Course ID(int, 2 digit), User ID(int, 3 digit)
+
+Book Entry: Book ID (int, index, maybe 2 digit), Book name(string, 128 char), Author(string, 32 char), Book status(bool), hold Course(bool)
+
+List of borrow and return history: Book ID(int), date(date), type of action(borrow/return)(string, 1 char, B/R)
+
+System functions according to user types:
+
+Course Registration
+Subscriber:
+Add course before due date: run a check on due date
+	Function: 
+	Input: course ID, Student ID, time, 
+	Output: printing: Update database, (successfully printing) 
+	Drop course before due date: run a check on due date
+		Function:
+		Input: course ID, Student ID, time
+		Output: printing: Update database, (successfully printing) 
+	Search for a course: apply filter to course data
+		Function:
+		Input: Course ID, Course Name, keyword, Professor Name, (Semester), Department number
+		Output: table (specified search)
+			-> Table: add/drop on the table page
+	Show list of courses: apply filter to course data
+		Function:
+		Input: Student ID
+		Output: Screen of table of all the user¡¯s courses enrolled
+			-> Drop still be available
+	See course syllabus: read syllabus field, if not available, give a message
+		Function:
+		Input: Course ID
+		Output: PDF file or message. 
+Manager:
+All of above
+	Upload syllabus for a course: write syllabus field
+		Input:	pdf file, Manager ID, course ID
+		Output: update web-app or web-database, MSG
+	Add/drop student from a course: manipulate list of enrolled students
+		1) show the students enrolled
+			Input: Course ID, Manager ID
+			Output: table/list
+		2) add/drop student:
+			Input:	Student ID, 
+			Output: update database, MSG
+		
+Admin:
+All of above
+Change the maximum of students¡¯ capacity
+	Input: course ID, User ID, new maximum number
+	Output: update database, MSG
+Create new course
+	Input: Course name, course ID, Instructor, Maximum number, dept. ID, course time, location, due date of drop time, due date of add time
+	Output: update database, MSG
+
+
+Course Delivery
+Subscriber:
+See my grade: filter User ID from grade table
+	Input: User ID, course ID
+	Output: show table/list
+	Take a quiz: not yet implemented
+		Input: 
+		Output:
+	Upload to dropbox: not yet implemented (!)
+		Input: any file (limitation later), User ID, Course ID
+		Output: MSG, update database
+	See news: not yet implemented
+		Input: User ID, course ID
+		Output: show list/table
+	See content: not yet implemented (!)
+		Input: User ID, Course ID
+		Output: show list/table
+Manager:
+All of above
+	Upload news: not yet implemented
+		Input: User ID, Course ID, news MSG
+		Output: update database
+	Upload grade: filter Course ID, then write to grade table (upgrade possible: stats, etc)
+		Input: User ID, Course ID, Student ID, grade, name of grade
+		Output: upload database
+	Upload quiz: not yet implemented (!)
+		Input: quiz, time limit, number of trials
+		Output: quiz result, update database, MSG
+	Create groups: not yet implemented (!)
+		Input:  All the students in the group, group name, User ID, Course ID
+		Output: upload database, MSG
+	Upload and retrieve from dropbox: not yet implemented (!)
+		Input: 
+		Output:
+	Upload content (with different types): not yet implemented (!)
+		Input:
+		Output:
+	Show grade
+		Input: course ID, User ID
+		Output: list
+Admin:
+All of above
+
+Library Management:
+Subscriber:
+Search book: apply filter to book entries
+	Input: Book name, author, related course
+	Output: show list
+	Borrow book: run a check on book status and hold Course, if available, also write 
+	Message in list history
+	Input: book id, user id, time
+	Output: update database, MSG
+	Return book: write to book status, also write message in list history
+		Input: book id, user id, time
+	Output: update database, MSG
+	Receive notice: not yet implemented
+		Input:  user ID
+	Output: list
+Manager:
+All of above
+	Add new book: create new row in book entries
+		Input: book name, author, related course, hold status
+	Output: update database, MSG
+	See borrower record: read list history
+		Input: book name, book id (?), User ID
+	Output: list
+	Issue a notice to a student: not yet implemented
+		Input: news MSG, User ID, Student¡¯s ID/s
+	Output: update database, MSG
+	Set book on ¡°hold¡± status for a course (only student registered for the course can borrow): write to hold Course
+		Input: book id, user ID, status (yes/no)
+	Output: update database, MSG
+Admin:
+All of above
